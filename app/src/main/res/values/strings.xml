@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Accelerator Logger</string>
+    <string name="set_sumplingrate_button">Button</string>
+    <string name="start">start</string>
+    <string name="stop">stop</string>
+    <string name="set">set</string>
+</resources>
