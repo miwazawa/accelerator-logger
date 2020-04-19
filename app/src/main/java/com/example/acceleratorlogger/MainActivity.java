@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity
     //入力されたときに立つフラグ
     private boolean isWantConvertingSamplingRate=false;
 
-
     public void onAccuracyChanged(Sensor sensor, int n) {
     }
 
@@ -110,7 +109,6 @@ public class MainActivity extends AppCompatActivity
         button_get1 = (Button) findViewById(R.id.button_get1);
         edittextView1 = (TextView) findViewById(R.id.edittextView1);
         issamplingratetextView = (TextView) findViewById(R.id.wehterSettingSamplingRate);
-
 
         button_get.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,8 +138,6 @@ public class MainActivity extends AppCompatActivity
                     editText.setText("");
                     isInputSamplingRate = false;
                 }
-
-
 
             }
         });
@@ -189,8 +185,6 @@ public class MainActivity extends AppCompatActivity
             }
 
         });
-        //（余談）調査したところ，registerListenerの第三引数のint rateをいじっても加速度センサはうまく動かなく，
-        //端末の加速度センサの種類に依存した結果しか返ってこない
 
         stop_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,7 +208,6 @@ public class MainActivity extends AppCompatActivity
         mZ = (TextView)this.findViewById(R.id.textView3);
         HzperS= (TextView)this.findViewById(R.id.textView_sampling_rate);
     }
-
 
     @Override
     protected void onPause() {
@@ -272,17 +265,16 @@ public class MainActivity extends AppCompatActivity
 
     public void copy_information() {
 
-
         accX_w = new ArrayList(accX);
         accY_w = new ArrayList(accY);
         accZ_w = new ArrayList(accZ);
-
 
         timeStamp_forAcc_w = new ArrayList(timeStamp_forAcc);
         timeStamp_Time_forAcc_w = new ArrayList(timeStamp_Time_forAcc);
 
     }
     public void changeandcopy_information() {
+
         accX_w = new ArrayList();
         accY_w = new ArrayList();
         accZ_w = new ArrayList();
@@ -291,9 +283,9 @@ public class MainActivity extends AppCompatActivity
         int temp_size = timeStamp_forAcc_w.size();
         boolean once = false;
 
-        //Log.d("hoge", "input"+input_sampling_rate+"wantconvert" + wantConverting_sampling_rate);
+        //配列を希望するサンプリングレートになるように間引くための変数
         int AdjustI = (int)(input_sampling_rate/wantConverting_sampling_rate);
-        //Log.d("AdjustI * i", ""+AdjustI);
+
         for (int i = 0; AdjustI*i < temp_size; i++) {
             if(!once){
                 timeStamp_forAcc_w.clear();
@@ -320,7 +312,6 @@ public class MainActivity extends AppCompatActivity
         accX.clear();
         accY.clear();
         accZ.clear();
-
 
         timeStamp_forAcc.clear();
         timeStamp_Time_forAcc.clear();
@@ -395,24 +386,18 @@ public class MainActivity extends AppCompatActivity
             filePath = Environment.getDataDirectory().toString();
         }
 
-        //センサデータを書き込む部分
-
         //acc書き込み
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath + "/acc_log/" + tmp_fileName, true), "UTF-8"));
-            //             addDebugMessage("acc書きこみ開始 filePath: " + filePath + "/acc/" + tmp_fileName + "  timeStamp.size(): " + timeStamp_forAcc.size());
             for (int i = 0; i < timeStamp_forAcc_w.size(); i++) {
                 str = timeStamp_forAcc_w.get(i) + "," + timeStamp_Time_forAcc_w.get(i) + "," + accX_w.get(i) + "," + accY_w.get(i) + "," + accZ_w.get(i);
                 bw.write(str);
                 bw.newLine();
                 Log.d("accX_W", str);
-      //                          Log.d("MainActivity", "writeCSV_route_acc    i: " + i + "    str: " + str + "    filePath: " + filePath + "/acc_test/" + tmp_fileName);
             }
             bw.close();
         }catch (Exception e) {
         }
-
-
 
         timeStamp_forAcc_w.clear();
         timeStamp_Time_forAcc_w.clear();
@@ -422,5 +407,4 @@ public class MainActivity extends AppCompatActivity
         accZ_w.clear();
 
     }
-
 }
