@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<String> accX = new ArrayList<String>();
     ArrayList<String> accY = new ArrayList<String>();
     ArrayList<String> accZ = new ArrayList<String>();
-
-    ArrayList<String> timeStamp_forAcc = new ArrayList<String>();//UNIX時間
+    
     ArrayList<String> timeStamp_Time_forAcc = new ArrayList<String>();//時間
 
     //書き込み用の情報
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity
     ArrayList<String> accY_w = new ArrayList<String>();
     ArrayList<String> accZ_w = new ArrayList<String>();
 
-    ArrayList<String> timeStamp_forAcc_w = new ArrayList<String>();//UNIX時間
     ArrayList<String> timeStamp_Time_forAcc_w = new ArrayList<String>();//時間
 
     //時間(年.月.日_時:分:秒)
@@ -203,9 +201,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        mX = (TextView)this.findViewById(R.id.textView1);
-        mY = (TextView)this.findViewById(R.id.textView2);
-        mZ = (TextView)this.findViewById(R.id.textView3);
+        mX = (TextView)this.findViewById(R.id.textViewX);
+        mY = (TextView)this.findViewById(R.id.textViewY);
+        mZ = (TextView)this.findViewById(R.id.textViewZ);
         HzperS= (TextView)this.findViewById(R.id.textView_sampling_rate);
     }
 
@@ -251,7 +249,6 @@ public class MainActivity extends AppCompatActivity
                 accY.add(String.format("%3.2f", sensorEvent.values[1]));
                 accZ.add(String.format("%3.2f", sensorEvent.values[2]));
 
-                timeStamp_forAcc.add(String.valueOf(unixtime));
                 timeStamp_Time_forAcc.add(sdf1.format(unixtime));
 
             }
@@ -269,7 +266,6 @@ public class MainActivity extends AppCompatActivity
         accY_w = new ArrayList(accY);
         accZ_w = new ArrayList(accZ);
 
-        timeStamp_forAcc_w = new ArrayList(timeStamp_forAcc);
         timeStamp_Time_forAcc_w = new ArrayList(timeStamp_Time_forAcc);
 
     }
@@ -278,9 +274,8 @@ public class MainActivity extends AppCompatActivity
         accX_w = new ArrayList();
         accY_w = new ArrayList();
         accZ_w = new ArrayList();
-        timeStamp_forAcc_w = new ArrayList(timeStamp_forAcc);
-        timeStamp_Time_forAcc_w = new ArrayList();
-        int temp_size = timeStamp_forAcc_w.size();
+        timeStamp_Time_forAcc_w = new ArrayList(timeStamp_Time_forAcc);
+        int temp_size = timeStamp_Time_forAcc_w.size();
         boolean once = false;
 
         //配列を希望するサンプリングレートになるように間引くための変数
@@ -288,18 +283,17 @@ public class MainActivity extends AppCompatActivity
 
         for (int i = 0; AdjustI*i < temp_size; i++) {
             if(!once){
-                timeStamp_forAcc_w.clear();
+                timeStamp_Time_forAcc_w.clear();
                 once=true;
             }
             accX_w.add(accX.get(AdjustI*i));
             accY_w.add(accY.get(AdjustI*i));
             accZ_w.add(accZ.get(AdjustI*i));
-            timeStamp_forAcc_w.add(timeStamp_forAcc.get(AdjustI*i));
             timeStamp_Time_forAcc_w.add(timeStamp_Time_forAcc.get(AdjustI*i));
             Log.d("size", ""+ accX_w);
         }
 /*
-        for (int i =0;i<timeStamp_forAcc_w.size();++i){
+        for (int i =0;i<timeStamp_Time_forAcc_w.size();++i){
             Log.d("accX_W", ""+accX_w.get(i));
         }
 */
@@ -313,7 +307,6 @@ public class MainActivity extends AppCompatActivity
         accY.clear();
         accZ.clear();
 
-        timeStamp_forAcc.clear();
         timeStamp_Time_forAcc.clear();
 
         eventOccuredTimeMilli = -1;
@@ -389,8 +382,8 @@ public class MainActivity extends AppCompatActivity
         //acc書き込み
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath + "/acc_log/" + tmp_fileName, true), "UTF-8"));
-            for (int i = 0; i < timeStamp_forAcc_w.size(); i++) {
-                str = timeStamp_forAcc_w.get(i) + "," + timeStamp_Time_forAcc_w.get(i) + "," + accX_w.get(i) + "," + accY_w.get(i) + "," + accZ_w.get(i);
+            for (int i = 0; i < timeStamp_Time_forAcc_w.size(); i++) {
+                str = timeStamp_Time_forAcc_w.get(i) + "," + accX_w.get(i) + "," + accY_w.get(i) + "," + accZ_w.get(i);
                 bw.write(str);
                 bw.newLine();
                 Log.d("accX_W", str);
@@ -399,7 +392,6 @@ public class MainActivity extends AppCompatActivity
         }catch (Exception e) {
         }
 
-        timeStamp_forAcc_w.clear();
         timeStamp_Time_forAcc_w.clear();
 
         accX_w.clear();
