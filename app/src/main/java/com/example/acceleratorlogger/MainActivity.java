@@ -3,6 +3,7 @@ package com.example.acceleratorlogger;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.hardware.Sensor;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity
     long eventOccuredTimeMilli = -1;
     long eventOccuredTimeNano = -1;
 
-
     //sensorChangedで更新される情報(加速度,ジャイロ)
     ArrayList<String> accX = new ArrayList<String>();
     ArrayList<String> accY = new ArrayList<String>();
@@ -89,6 +89,12 @@ public class MainActivity extends AppCompatActivity
     //入力されたときに立つフラグ
     private boolean isWantConvertingSamplingRate=false;
 
+    //以下ラジオ体操対応箇所定義
+    private MediaPlayer mediaPlayer;
+    private Button button_radio;
+    //音楽を流す準備のブール値
+    private boolean readyPlayRadio=false;
+
     public void onAccuracyChanged(Sensor sensor, int n) {
     }
 
@@ -107,6 +113,7 @@ public class MainActivity extends AppCompatActivity
         button_get1 = (Button) findViewById(R.id.button_get1);
         edittextView1 = (TextView) findViewById(R.id.edittextView1);
         issamplingratetextView = (TextView) findViewById(R.id.wehterSettingSamplingRate);
+        button_radio = (Button) findViewById(R.id.button_radio);
 
         button_get.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,6 +212,24 @@ public class MainActivity extends AppCompatActivity
         mY = (TextView)this.findViewById(R.id.textViewY);
         mZ = (TextView)this.findViewById(R.id.textViewZ);
         HzperS= (TextView)this.findViewById(R.id.textView_sampling_rate);
+
+        // リスナーをラジオ体操ボタンに登録
+        button_radio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 音楽再生準備
+                if(!readyPlayRadio){
+                    readyPlayRadio=true;
+                    button_radio.setText("ラジオ体操モード：ON");
+                }
+                else{
+                    readyPlayRadio=false;
+                    button_radio.setText("ラジオ体操モード：OFF");
+                }
+
+                //audioPlay();
+            }
+        });
     }
 
     @Override

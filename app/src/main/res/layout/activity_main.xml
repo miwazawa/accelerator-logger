@@ -73,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:ems="13"
         android:hint="Input Your Sampling Frequency"
         android:inputType="text" />
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:text="No Input" />
 
     <Button
@@ -101,7 +101,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:ems="14"
         android:hint="Set a Sampling Frequency You Want"
         android:inputType="text" />
@@ -112,7 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:text="No Input" />
 
     <Button
@@ -123,7 +123,14 @@
         android:text="GET"
         android:id="@+id/button_get1"/>
 
-
+    <Button
+        android:id="@+id/button_radio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
+        android:text="ラジオ体操モード：OFF" />
 
 
 </LinearLayout>
