@@ -1,6 +1,5 @@
 package com.example.acceleratorlogger;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.media.MediaPlayer;
@@ -11,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -89,6 +89,9 @@ public class MainActivity extends AppCompatActivity
     //入力されたときに立つフラグ
     private boolean isWantConvertingSamplingRate=false;
 
+    //記録中か表示するやつ
+    private TextView isRecording;
+
     //以下ラジオ体操対応箇所定義
     private MediaPlayer mediaPlayer;
     private Button button_radio;
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity
         edittextView1 = (TextView) findViewById(R.id.edittextView1);
         issamplingratetextView = (TextView) findViewById(R.id.wehterSettingSamplingRate);
         button_radio = (Button) findViewById(R.id.button_radio);
+        isRecording = (TextView) findViewById(R.id.isRecoreing);
 
         button_get.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,10 +187,43 @@ public class MainActivity extends AppCompatActivity
                 sdf.applyPattern("yy.MM.dd_HH:mm:ss");
                 start_time = sdf.format(System.currentTimeMillis());
 
-                button_flag = 1;
+                if(!readyPlayRadio){
+                    button_flag = 1;
 
-                initialize();
-                last_fileName = "";
+                    initialize();
+                    last_fileName = "";
+                    isRecording.setText("recording...");
+                }
+                else{
+                    isRecording.setText("recording...");
+                    button_flag = 1;
+                    Log.d("radio", "run");
+                    initialize();
+                    last_fileName = "";
+
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("record", "finish!");
+                            button_flag = 0;
+
+                            if(isInputSamplingRate && isWantConvertingSamplingRate){
+                                changeandcopy_information();
+                                save_route();
+                                initialize();
+                                isRecording.setText("not recording");
+                            }else {
+                                copy_information();
+                                save_route();
+                                initialize();
+                                isRecording.setText("not recording");
+                            }
+                        }
+                    }, 191000);//60000
+
+                }
+
             }
 
         });
@@ -200,11 +237,14 @@ public class MainActivity extends AppCompatActivity
                     changeandcopy_information();
                     save_route();
                     initialize();
+                    Log.d("record", "finish!");
                 }else {
                     copy_information();
                     save_route();
                     initialize();
+                    Log.d("record", "finish!");
                 }
+                isRecording.setText("not recording");
             }
         });
 
@@ -259,7 +299,7 @@ public class MainActivity extends AppCompatActivity
         mZ.setText("加速度センサーZ:" + String.valueOf(sensorEvent.values[2]));
 
         sampling_rate = 1/((sensorEvent.timestamp - prevtime)/1000000000); //ns -> s & (t) -> (Hz) （∴ T = 1/f）
-        Log.d("sampling_rate", ""+sampling_rate+"(Hz)");
+        //Log.d("sampling_rate", ""+sampling_rate+"(Hz)");
 
         //sampling_rate = (sensorEvent.timestamp - prevtime);//(ns)
         //Log.d("sampling_rate", ""+sampling_rate+"(ns)");
@@ -315,7 +355,7 @@ public class MainActivity extends AppCompatActivity
             accY_w.add(accY.get(AdjustI*i));
             accZ_w.add(accZ.get(AdjustI*i));
             timeStamp_Time_forAcc_w.add(timeStamp_Time_forAcc.get(AdjustI*i));
-            Log.d("size", ""+ accX_w);
+            //Log.d("size", ""+ accX_w);
         }
 /*
         for (int i =0;i<timeStamp_Time_forAcc_w.size();++i){
@@ -363,7 +403,7 @@ public class MainActivity extends AppCompatActivity
         if(last_fileName != ""){
             ArrayList<String> list = new ArrayList<String>();
             list.add("/acc_log/");
-            Log.d("hoge", "hoge");
+            //Log.d("hoge", "hoge");
             for(int i=0; i < list.size(); i++){
                 File file = new File( filePath + list.get(i) + last_fileName );
                 if (file.exists()) {
@@ -399,7 +439,7 @@ public class MainActivity extends AppCompatActivity
         String filePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             filePath = Environment.getExternalStorageDirectory().toString();
-            Log.d("hoge", filePath);
+            //Log.d("hoge", filePath);
         }else{
             filePath = Environment.getDataDirectory().toString();
         }
@@ -411,7 +451,7 @@ public class MainActivity extends AppCompatActivity
                 str = timeStamp_Time_forAcc_w.get(i) + "," + accX_w.get(i) + "," + accY_w.get(i) + "," + accZ_w.get(i);
                 bw.write(str);
                 bw.newLine();
-                Log.d("accX_W", str);
+                //Log.d("accX_W", str);
             }
             bw.close();
         }catch (Exception e) {

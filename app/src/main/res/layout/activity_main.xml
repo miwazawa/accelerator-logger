@@ -15,6 +15,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp" />
+
     <TextView
         android:id="@+id/textViewY"
         android:layout_width="wrap_content"
@@ -22,6 +23,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp" />
+
     <TextView
         android:id="@+id/textViewZ"
         android:layout_width="wrap_content"
@@ -73,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="3dp"
         android:ems="13"
         android:hint="Input Your Sampling Frequency"
         android:inputType="text" />
@@ -101,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="3dp"
         android:ems="14"
         android:hint="Set a Sampling Frequency You Want"
         android:inputType="text" />
@@ -123,14 +125,32 @@
         android:text="GET"
         android:id="@+id/button_get1"/>
 
-    <Button
-        android:id="@+id/button_radio"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="8dp"
-        android:text="ラジオ体操モード：OFF" />
+        android:orientation="horizontal"
+    >
+
+
+        <Button
+            android:id="@+id/button_radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="8dp"
+            android:text="ラジオ体操モード：OFF" />
+
+        <TextView
+            android:id="@+id/isRecoreing"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="not recording" />
+
+
+    </LinearLayout>
+
 
 
 </LinearLayout>
