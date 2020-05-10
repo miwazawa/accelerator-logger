@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity
     //音楽を流す準備のブール値
     private boolean readyPlayRadio=false;
 
+    
+
     public void onAccuracyChanged(Sensor sensor, int n) {
     }
 
