@@ -564,19 +564,19 @@ public class MainActivity extends AppCompatActivity
 
         int all_data_length= timeStamp_Time_forAcc_w.size();
 
-        labeling(1-1,739-1,1,filePath);
-        labeling(740-1,2217-1,2,filePath);
-        labeling(2218-1,3801-1,3,filePath);
-        labeling(3802-1,5491-1,4,filePath);
-        labeling(5492-1,7075-1,5,filePath);
-        labeling(7076-1,8553-1,6,filePath);
-        labeling(8554-1,10031-1,7,filePath);
-        labeling(10032-1,11615-1,8,filePath);
-        labeling(11616-1,13357-1,9,filePath);
-        labeling(13358-1,14994-1,10,filePath);
-        labeling(14995-1,16103-1,11,filePath);
-        labeling(16104-1,17687-1,12,filePath);
-        labeling(17688-1,19256-1,13,filePath);
+        labeling(1-1+898,739-1+898,1,filePath);
+        labeling(740-1+898,2217-1+898,2,filePath);
+        labeling(2218-1+898,3801-1+898,3,filePath);
+        labeling(3802-1+898,5491-1+898,4,filePath);
+        labeling(5492-1+898,7075-1+898,5,filePath);
+        labeling(7076-1+898,8553-1+898,6,filePath);
+        labeling(8554-1+898,10031-1+898,7,filePath);
+        labeling(10032-1+898,11615-1+898,8,filePath);
+        labeling(11616-1+898,13357-1+898,9,filePath);
+        labeling(13358-1+898,14994-1+898,10,filePath);
+        labeling(14995-1+898,16103-1+898,11,filePath);
+        labeling(16104-1+898,17687-1+898,12,filePath);
+        labeling(17688-1+898,19256-1+898,13,filePath);
 
         timeStamp_Time_forAcc_w.clear();
 
@@ -600,9 +600,6 @@ public class MainActivity extends AppCompatActivity
         double waido=0.0;
         double sendo=0.0;
         double signal_power=0.0;
-        double length = 0.0;
-
-        length = end_num - start_num + 1;
 
         //Log.d("hoge", accX_w.get(500));
         //合成加速度を計算
@@ -619,32 +616,34 @@ public class MainActivity extends AppCompatActivity
             sum_for_ave += accXYZ.get(i-start_num);
         }
 
-        for(int i = 0;i < length-2;++i){
-            Log.d("hoge", String.valueOf(length));
-            sum_for_var += (accXYZ.get(i) - sum_for_ave)*(accXYZ.get(i) - sum_for_ave);
+        //平均
+        ave = sum_for_ave / accXYZ.size();
+        for(int i = 0;i < accXYZ.size();++i){
+            Log.d("hoge", String.valueOf((accXYZ.get(i) - sum_for_ave)));
+            sum_for_var += (accXYZ.get(i) - ave)*(accXYZ.get(i) - ave);
 
         }
 
-        //平均
-        ave = sum_for_ave / length;
+
         //分散
-        bunsan = sum_for_var / length;
+        bunsan = sum_for_var / accXYZ.size();
         //標準偏差
         hensa = Math.sqrt(bunsan);
 
-        for(int i = 0;i < length-2;++i){
-            sum_for_waido += ((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa)
-                    *((accXYZ.get(i) - sum_for_ave)/hensa);
-            sum_for_sendo += ((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa)
-                    *((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa);
+        for(int i = 0;i < accXYZ.size();++i){
+            sum_for_waido += ((accXYZ.get(i) - ave)/hensa)*((accXYZ.get(i) - ave)/hensa)
+                    *((accXYZ.get(i) - ave)/hensa);
+            sum_for_sendo += ((accXYZ.get(i) - ave)/hensa)*((accXYZ.get(i) - ave)/hensa)
+                    *((accXYZ.get(i) - ave)/hensa)*((accXYZ.get(i) - ave)/hensa);
             sum_for_signal += accXYZ.get(i)*accXYZ.get(i);
         }
+
         //歪度
-        waido = sum_for_waido / length;
+        waido = sum_for_waido / accXYZ.size();
         //尖度
-        sendo = sum_for_sendo / length;
+        sendo = sum_for_sendo / accXYZ.size();
         //信号パワー
-        signal_power = sum_for_signal / length;
+        signal_power = sum_for_signal / accXYZ.size();
 
         //acc書き込み
         try {
