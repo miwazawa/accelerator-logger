@@ -25,8 +25,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import static java.lang.Math.sqrt;
 
 public class MainActivity extends AppCompatActivity
         implements SensorEventListener {
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<String> accX_w = new ArrayList<String>();
     ArrayList<String> accY_w = new ArrayList<String>();
     ArrayList<String> accZ_w = new ArrayList<String>();
+    ArrayList<Float>  accXYZ = new ArrayList<Float>(); //合成加速度
 
     ArrayList<String> timeStamp_Time_forAcc_w = new ArrayList<String>();//時間
 
@@ -420,15 +424,15 @@ public class MainActivity extends AppCompatActivity
         accZ_w = new ArrayList();
         timeStamp_Time_forAcc_w = new ArrayList(timeStamp_Time_forAcc);
         int temp_size = timeStamp_Time_forAcc_w.size();
-        boolean once = false;
+        boolean _once = false;
 
         //配列を希望するサンプリングレートになるように間引くための変数
         int AdjustI = (int)(input_sampling_rate/wantConverting_sampling_rate);
 
         for (int i = 0; AdjustI*i < temp_size; i++) {
-            if(!once){
+            if(!_once){
                 timeStamp_Time_forAcc_w.clear();
-                once=true;
+                _once=true;
             }
             accX_w.add(accX.get(AdjustI*i));
             accY_w.add(accY.get(AdjustI*i));
@@ -503,7 +507,12 @@ public class MainActivity extends AppCompatActivity
 
                 public void run() {
                     //ここではセンサデータを書き込み
-                    writeCSV_route();
+
+                    if(readyPlayRadio){
+                        writeCSV_routeForRadio();
+                    }else{
+                        writeCSV_route();
+                    }
 
                 }
             }).start();
@@ -541,6 +550,120 @@ public class MainActivity extends AppCompatActivity
         accX_w.clear();
         accY_w.clear();
         accZ_w.clear();
+
+    }
+    public void writeCSV_routeForRadio() {
+
+        String filePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            filePath = Environment.getExternalStorageDirectory().toString();
+            //Log.d("hoge", filePath);
+        }else{
+            filePath = Environment.getDataDirectory().toString();
+        }
+
+        int all_data_length= timeStamp_Time_forAcc_w.size();
+
+        labeling(1-1,739-1,1,filePath);
+        labeling(740-1,2217-1,2,filePath);
+        labeling(2218-1,3801-1,3,filePath);
+        labeling(3802-1,5491-1,4,filePath);
+        labeling(5492-1,7075-1,5,filePath);
+        labeling(7076-1,8553-1,6,filePath);
+        labeling(8554-1,10031-1,7,filePath);
+        labeling(10032-1,11615-1,8,filePath);
+        labeling(11616-1,13357-1,9,filePath);
+        labeling(13358-1,14994-1,10,filePath);
+        labeling(14995-1,16103-1,11,filePath);
+        labeling(16104-1,17687-1,12,filePath);
+        labeling(17688-1,19256-1,13,filePath);
+
+        timeStamp_Time_forAcc_w.clear();
+
+        accX_w.clear();
+        accY_w.clear();
+        accZ_w.clear();
+
+    }
+    public void labeling(int start_num,int end_num,int label,String filePath){
+
+        String str;
+        double sum_for_ave=0.0;
+        double sum_for_var=0.0;
+        double sum_for_waido=0.0;
+        double sum_for_sendo=0.0;
+        double sum_for_signal=0.0;
+        double sum_accel=0.0;
+        double ave=0.0;
+        double bunsan=0.0;
+        double hensa=0.0;
+        double waido=0.0;
+        double sendo=0.0;
+        double signal_power=0.0;
+        double length = 0.0;
+
+        length = end_num - start_num + 1;
+
+        //Log.d("hoge", accX_w.get(500));
+        //合成加速度を計算
+        for(int i = start_num;i < end_num-1;++i){
+            /*accXYZ.add((float) sqrt(Double.valueOf(accX_w.get(i))*Double.valueOf(accX_w.get(i))
+                    + Double.valueOf(accY_w.get(i))*Double.valueOf(accY_w.get(i))
+                    + Double.valueOf(accZ_w.get(i))*Double.valueOf(accZ_w.get(i))));
+            */
+            sum_accel=sqrt(Double.valueOf(accX_w.get(i))*Double.valueOf(accX_w.get(i))
+                    + Double.valueOf(accY_w.get(i))*Double.valueOf(accY_w.get(i))
+                    + Double.valueOf(accZ_w.get(i))*Double.valueOf(accZ_w.get(i)));
+            accXYZ.add((float) sum_accel);
+
+            sum_for_ave += accXYZ.get(i-start_num);
+        }
+
+        for(int i = 0;i < length-2;++i){
+            Log.d("hoge", String.valueOf(length));
+            sum_for_var += (accXYZ.get(i) - sum_for_ave)*(accXYZ.get(i) - sum_for_ave);
+
+        }
+
+        //平均
+        ave = sum_for_ave / length;
+        //分散
+        bunsan = sum_for_var / length;
+        //標準偏差
+        hensa = Math.sqrt(bunsan);
+
+        for(int i = 0;i < length-2;++i){
+            sum_for_waido += ((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa)
+                    *((accXYZ.get(i) - sum_for_ave)/hensa);
+            sum_for_sendo += ((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa)
+                    *((accXYZ.get(i) - sum_for_ave)/hensa)*((accXYZ.get(i) - sum_for_ave)/hensa);
+            sum_for_signal += accXYZ.get(i)*accXYZ.get(i);
+        }
+        //歪度
+        waido = sum_for_waido / length;
+        //尖度
+        sendo = sum_for_sendo / length;
+        //信号パワー
+        signal_power = sum_for_signal / length;
+
+        //acc書き込み
+        try {
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath + "/acc_log/" + tmp_fileName, true), "UTF-8"));
+            //体操は全13種類なので，1行目のデータ名と各体操で合計14行になる
+            if(label==1){
+                str = "average,bunsan,waido,sendo,signal power,label";
+                bw.write(str);
+                bw.newLine();
+            }
+
+            str = ave + "," + bunsan + "," + waido + "," + sendo + "," + signal_power + "," + label;
+            bw.write(str);
+            bw.newLine();
+            //Log.d("accX_W", str);
+            bw.close();
+            accXYZ.clear();
+        }catch (Exception e) {
+        }
 
     }
 }
